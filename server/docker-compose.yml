@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: postgres_lireddit
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: lireddit-postgres
+      PGDATA: /data-lireddit/postgres
+    volumes:
+       - postgres:/data-lireddit/postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - postgres
+    restart: unless-stopped
+  
+  pgadmin:
+    container_name: pgadmin_lireddit
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+       - pgadmin:/data-lireddit/pgadmin
+    ports:
+      - "8080:80"
+    networks:
+      - postgres
+    restart: unless-stopped
+
+networks:
+  postgres:
+    driver: bridge
+
+volumes:
+    postgres:
+    pgadmin:
