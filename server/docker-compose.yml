@@ -31,6 +31,27 @@ services:
       - postgres
     restart: unless-stopped
 
+  redis:
+    container_name: redis_lireddit
+    image: redis:latest
+    ports:
+      - 6379:6379
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-lireddit-data:/data-lireddit/redis
+
+  redis-commander:
+    container_name: redis-commander_lireddit
+    image: rediscommander/redis-commander:latest
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=root
+      - HTTP_PASSWORD=qwerty
+    ports:
+      - 8081:8081
+    depends_on:
+      - redis
+
 networks:
   postgres:
     driver: bridge
@@ -38,3 +59,4 @@ networks:
 volumes:
     postgres:
     pgadmin:
+    redis-lireddit-data:
