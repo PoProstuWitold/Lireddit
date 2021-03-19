@@ -7,31 +7,33 @@ import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
 import * as Yup from 'yup'
-import { useMutation } from 'urql'
+import { useRegisterMutation } from '../generated/graphql'
+// import { useMutation } from 'urql'
 
 interface registerProps {
     
 }
 
-const RegisterMutation = `
-mutation Register($username: String!, $password:String!){
-    register(options: { username: $username, password: $password }) {
-      errors {
-        field
-        message
-      }
-      user {
-        id
-        username
-      }
-    }
-  }
+// const RegisterMutation = `
+// mutation Register($username: String!, $password:String!){
+//     register(options: { username: $username, password: $password }) {
+//       errors {
+//         field
+//         message
+//       }
+//       user {
+//         id
+//         username
+//       }
+//     }
+//   }
   
-`
+// `
 
 const Register: React.FC<registerProps> = ({}) => {
     
-    const [, register] = useMutation(RegisterMutation)
+    // const [, register] = useMutation(RegisterMutation)
+    const [, register] = useRegisterMutation()
 
     return (
     <Container height="100vh">
