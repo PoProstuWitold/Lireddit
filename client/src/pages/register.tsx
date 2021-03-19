@@ -8,41 +8,32 @@ import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
 import * as Yup from 'yup'
 import { useRegisterMutation } from '../generated/graphql'
-// import { useMutation } from 'urql'
+import { toErrorMap } from '../utils/toErrorMap'
+import { useRouter } from 'next/router'
 
 interface registerProps {
     
 }
 
-// const RegisterMutation = `
-// mutation Register($username: String!, $password:String!){
-//     register(options: { username: $username, password: $password }) {
-//       errors {
-//         field
-//         message
-//       }
-//       user {
-//         id
-//         username
-//       }
-//     }
-//   }
-  
-// `
-
 const Register: React.FC<registerProps> = ({}) => {
     
-    // const [, register] = useMutation(RegisterMutation)
     const [, register] = useRegisterMutation()
+
+    const router = useRouter()
 
     return (
     <Container height="100vh">
        <Wrapper variant='small'>
             <Formik 
                 initialValues={{ username: '', password: '' }}
-                onSubmit={async (values) => {
+                onSubmit={async (values, { setErrors }) => {
                     const response = await register(values)
-                    console.log(response)
+                    if(response.data?.register.errors) {
+                        setErrors(toErrorMap(response.data.register.errors))
+                    } else if (response.data?.register.user) {
+                        // worked
+                        router.push('/')
+                    }
                 }}
                 validationSchema={Yup.object().shape({
                     username: Yup.string()
