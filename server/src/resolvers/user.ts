@@ -40,6 +40,21 @@ export class UserResolver {
         @Ctx() { em, req }: MyContext
     ): Promise<UserResponse> {
 
+        if(options.username.length <= 2 || options.password.length <= 2) {
+            return {
+                errors: [
+                    {
+                        field: "username",
+                        message: "Length must be greater than 2",
+                    },
+                    {
+                        field: "password",
+                        message: "length must be greater than 2",
+                    }
+                ]
+            }
+        }
+
         if(options.username.length <= 2) {
             return {
                 errors: [
