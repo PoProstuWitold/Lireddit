@@ -6,6 +6,7 @@ import { Container } from '../components/Container'
 import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
+import * as Yup from 'yup'
 
 interface registerProps {
     
@@ -18,10 +19,24 @@ const Register: React.FC<registerProps> = ({}) => {
        <Wrapper variant='small'>
             <Formik 
                 initialValues={{ username: '', password: '' }}
-                onSubmit={async values => { 
-                    await new Promise(resolve => setTimeout(resolve, 1000))
-                    console.log(values)
+                onSubmit={(values, actions) => {
+
+                    setTimeout(() => {
+           
+                        actions.setSubmitting(false);
+                        console.log(values)
+                        
+                    }, 1000);
+           
                 }}
+                validationSchema={Yup.object().shape({
+                    username: Yup.string()
+                        .min(2, "Username must contain at least 2 characters")
+                        .required("Username is required"),
+                    password: Yup.string()
+                        .min(2, "Password must contain at least 2 characters")
+                        .required("Password is required")
+                })}
             >
             {({ isSubmitting }) => (
                 <Form>
