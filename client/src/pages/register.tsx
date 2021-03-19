@@ -7,27 +7,40 @@ import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
 import * as Yup from 'yup'
+import { useMutation } from 'urql'
 
 interface registerProps {
     
 }
 
+const RegisterMutation = `
+mutation Register($username: String!, $password:String!){
+    register(options: { username: $username, password: $password }) {
+      errors {
+        field
+        message
+      }
+      user {
+        id
+        username
+      }
+    }
+  }
+  
+`
 
 const Register: React.FC<registerProps> = ({}) => {
+    
+    const [, register] = useMutation(RegisterMutation)
+
     return (
     <Container height="100vh">
        <Wrapper variant='small'>
             <Formik 
                 initialValues={{ username: '', password: '' }}
-                onSubmit={(values, actions) => {
-
-                    setTimeout(() => {
-           
-                        actions.setSubmitting(false);
-                        console.log(values)
-                        
-                    }, 1000);
-           
+                onSubmit={async (values) => {
+                    const response = await register(values)
+                    console.log(response)
                 }}
                 validationSchema={Yup.object().shape({
                     username: Yup.string()
