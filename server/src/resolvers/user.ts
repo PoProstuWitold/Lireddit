@@ -2,6 +2,8 @@ import { MyContext } from '../types'
 import { Field, InputType, Mutation, Resolver, Arg, Ctx, ObjectType, Query} from 'type-graphql'
 import { User } from '../entities/User'
 import argon2 from 'argon2'
+import { registerSchema } from '../utils/validation'
+import insertedDataHandler from '../utils/insertedDataHandler'
 
 @InputType()
 class UsernamePasswordInput {
@@ -40,42 +42,12 @@ export class UserResolver {
         @Ctx() { em, req }: MyContext
     ): Promise<UserResponse> {
 
-        if(options.username.length <= 2 || options.password.length <= 2) {
-            return {
-                errors: [
-                    {
-                        field: "username",
-                        message: "Length must be greater than 2",
-                    },
-                    {
-                        field: "password",
-                        message: "length must be greater than 2",
-                    }
-                ]
-            }
+        const errors = insertedDataHandler(registerSchema, options)
+
+        if(errors) {
+            return { errors }
         }
 
-        if(options.username.length <= 2) {
-            return {
-                errors: [
-                    {
-                        field: "username",
-                        message: "Length must be greater than 2",
-                    }
-                ]
-            }
-        }
-
-        if(options.password.length <= 2) {
-            return {
-                errors: [
-                    {
-                        field: "password",
-                        message: "length must be greater than 2",
-                    }
-                ]
-            }
-        }
 
         const hashedPassword = await argon2.hash(options.password)
 
@@ -154,3 +126,5 @@ export class UserResolver {
         return user
     }
 }
+
+export { FieldError }
