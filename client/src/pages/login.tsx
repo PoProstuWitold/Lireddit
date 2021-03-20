@@ -10,6 +10,7 @@ import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import { withUrqlClient } from 'next-urql'
+import { NavBar } from '../components/NavBar'
 
 const Login: React.FC<{}> = ({}) => {
     
@@ -19,6 +20,7 @@ const Login: React.FC<{}> = ({}) => {
 
     return (
     <>
+    <NavBar/>
        <Wrapper variant='small'>
             <Formik 
                 initialValues={{ username: '', password: '' }}
