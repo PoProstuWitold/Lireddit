@@ -1,8 +1,6 @@
 import React from 'react'
 import { Formik, Form } from 'formik'
 import { Wrapper } from '../components/Wrapper'
-import { DarkModeSwitch } from '../components/DarkModeSwitch'
-import { Container } from '../components/Container'
 import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
@@ -19,7 +17,7 @@ const Login: React.FC<{}> = ({}) => {
     const router = useRouter()
 
     return (
-    <Container height="100vh">
+    <>
        <Wrapper variant='small'>
             <Formik 
                 initialValues={{ username: '', password: '' }}
@@ -51,9 +49,8 @@ const Login: React.FC<{}> = ({}) => {
                 </Form>
             )}
             </Formik>
-        <DarkModeSwitch/>
         </Wrapper>
-    </Container>
+    </>
     )
 }
 

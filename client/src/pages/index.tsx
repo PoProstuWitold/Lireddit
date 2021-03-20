@@ -1,11 +1,9 @@
-import { Container } from '../components/Container'
-import { DarkModeSwitch } from '../components/DarkModeSwitch'
+import { NavBar } from '../components/NavBar'
 
 const Index = () => (
-  <Container height="100vh">
-    <div>Hello world</div>
-    <DarkModeSwitch/>
-  </Container>
+  <>
+    Hello world
+  </>
 )
 
 export default Index

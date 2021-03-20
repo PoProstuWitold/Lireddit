@@ -1,6 +1,7 @@
 import { ChakraProvider } from '@chakra-ui/react'
 import { AppProps } from 'next/app'
 import { createClient, Provider } from 'urql'
+import { NavBar } from '../components/NavBar'
 import theme from '../theme'
 
 const client = createClient({
@@ -15,6 +16,7 @@ function MyApp({ Component, pageProps }: AppProps) {
     <Provider value={client}>
     <ChakraProvider resetCSS theme={theme}>
       <ChakraProvider resetCSS theme={theme}>
+        <NavBar/>
         <Component {...pageProps} />
       </ChakraProvider>
     </ChakraProvider>
