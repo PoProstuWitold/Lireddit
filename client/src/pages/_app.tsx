@@ -4,7 +4,7 @@ import { createClient, Provider, dedupExchange, fetchExchange } from 'urql'
 import { Cache, cacheExchange, QueryInput } from '@urql/exchange-graphcache'
 import { NavBar } from '../components/NavBar'
 import theme from '../theme'
-import { LoginMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
+import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
 
 function betterUpdateQuery<Result, Query>(
   cache: Cache,
@@ -57,6 +57,14 @@ const client = createClient({
               }
             )
           },
+          logout: (_result, args, cache, info) => {
+            betterUpdateQuery<LogoutMutation, MeQuery>(
+              cache,
+              { query: MeDocument },
+              _result,
+              () => ({ me: null })
+            )
+          }
         }
       }
   }), fetchExchange],

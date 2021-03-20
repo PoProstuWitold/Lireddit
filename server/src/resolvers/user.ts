@@ -4,6 +4,7 @@ import { User } from '../entities/User'
 import argon2 from 'argon2'
 import { registerSchema } from '../utils/validation'
 import insertedDataHandler from '../utils/insertedDataHandler'
+import { COOKIE_NAME } from '../constants'
 
 @InputType()
 class UsernamePasswordInput {
@@ -132,6 +133,25 @@ export class UserResolver {
         const user = await em.findOne(User, { id: req.session.userId })
 
         return user
+    }
+
+    @Mutation(() => Boolean)
+    logout(
+        @Ctx() { req, res }: MyContext
+    ) {
+        return new Promise(resolve => req.session.destroy(err => {
+            // clear session cookie even if there is an error
+            // res.clearCookie(COOKIE_NAME)
+
+            if(err) {
+                console.log(err)
+                resolve(false)
+                return
+            }
+            //clear session cookie only if there's no an error
+            res.clearCookie(COOKIE_NAME)
+            resolve(true)
+        }))
     }
 }
 

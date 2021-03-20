@@ -2,7 +2,7 @@ import React from 'react'
 import { Box, Flex, Link } from '@chakra-ui/layout'
 import { DarkModeSwitch } from './DarkModeSwitch'
 import NextLink from 'next/link'
-import { useMeQuery } from '../generated/graphql'
+import { useLogoutMutation, useMeQuery } from '../generated/graphql'
 import { Button } from '@chakra-ui/button'
 
 interface NavBarProps {
@@ -11,6 +11,7 @@ interface NavBarProps {
 
 export const NavBar: React.FC<NavBarProps> = ({}) => {
 
+    const [{fetching: logoutFetching }, logout] = useLogoutMutation()
     const [{data, fetching}] = useMeQuery()
     let body = null
 
@@ -35,7 +36,15 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
         body = (
             <Flex>
                 <Box fontWeight='semibold' color='white' mr={3}>{data.me.username}</Box>
-                <Button color='white' variant="link" mr={3}>Logout</Button>
+                <Button 
+                    onClick={() => logout()} 
+                    color='white' 
+                    variant="link" 
+                    mr={3}
+                    isLoading={logoutFetching}
+                    >
+                        Logout
+                    </Button>
                 <DarkModeSwitch/>
             </Flex>
         )
