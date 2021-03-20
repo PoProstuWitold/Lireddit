@@ -87,7 +87,11 @@ export class UserResolver {
             return {
                 errors: [
                     {
-                        field: "username or email",
+                        field: "username",
+                        message: "Invalid credentials"
+                    },
+                    {
+                        field: "password",
                         message: "Invalid credentials"
                     }
                 ]
@@ -100,7 +104,11 @@ export class UserResolver {
             return {
                 errors: [
                     {
-                        field: "username or email",
+                        field: "username",
+                        message: "Invalid credentials"
+                    },
+                    {
+                        field: "password",
                         message: "Invalid credentials"
                     }
                 ]
