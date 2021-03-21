@@ -9,6 +9,9 @@ import { COOKIE_NAME } from '../constants'
 @InputType()
 class UsernamePasswordInput {
     @Field()
+    email: string
+
+    @Field()
     username: string
 
     @Field()
@@ -53,6 +56,7 @@ export class UserResolver {
         const hashedPassword = await argon2.hash(options.password)
 
         const user = em.create(User, {
+            email: options.email,
             username: options.username,
             password: hashedPassword
         })
@@ -60,12 +64,22 @@ export class UserResolver {
         try {
             await em.persistAndFlush(user)
         } catch(err) {  //|| err.detail.includes("already exists"))
-            if (err.code === '23505') { //PostgreSQL duplicate error code
+            if (err.code === '23505' && err.constraint === 'user_username_unique') { //PostgreSQL duplicate error code
                 return {
                     errors: [
                         {
                             field: "username",
                             message: "username already taken",
+                        }
+                    ]
+                }
+            }
+            if (err.code === '23505' && err.constraint === 'user_email_unique') { //PostgreSQL duplicate error code
+                return {
+                    errors: [
+                        {
+                            field: "email",
+                            message: "email already taken",
                         }
                     ]
                 }
@@ -79,16 +93,22 @@ export class UserResolver {
 
     @Mutation(() => UserResponse)
     async login(
-        @Arg('options') options: UsernamePasswordInput,
+        @Arg('usernameOrEmail') usernameOrEmail: string,
+        @Arg('password') password: string,
         @Ctx() { em, req }: MyContext
     ): Promise<UserResponse> {
-        const user = await em.findOne(User, { username: options.username })
+        const user = await em.findOne(
+            User,
+            usernameOrEmail.includes('@')
+                ? { email: usernameOrEmail }
+                : { username: usernameOrEmail }
+        )
 
         if(!user) {
             return {
                 errors: [
                     {
-                        field: "username",
+                        field: "usernameOrEmail",
                         message: "Invalid credentials"
                     },
                     {
@@ -99,13 +119,13 @@ export class UserResolver {
             }
         }
 
-        const isMatch = await argon2.verify(user.password, options.password)
+        const isMatch = await argon2.verify(user.password, password)
 
         if(!isMatch) {
             return {
                 errors: [
                     {
-                        field: "username",
+                        field: "usernameOrEmail",
                         message: "Invalid credentials"
                     },
                     {
@@ -152,6 +172,15 @@ export class UserResolver {
             res.clearCookie(COOKIE_NAME)
             resolve(true)
         }))
+    }
+
+    @Mutation(() => Boolean)
+    async forgotPassword(
+        @Arg('email') email: string,
+        @Ctx() { em }: MyContext
+    ) {
+        // const user = await em.findOne(User, { email })
+        return true
     }
 }
 

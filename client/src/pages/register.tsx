@@ -27,9 +27,9 @@ const Register: React.FC<registerProps> = ({}) => {
         <NavBar/>
        <Wrapper variant='small'>
             <Formik 
-                initialValues={{ username: '', password: '' }}
+                initialValues={{ email: '', username: '', password: '' }}
                 onSubmit={async (values, { setErrors }) => {
-                    const response = await register(values)
+                    const response = await register({ options: values})
                     if(response.data?.register.errors) {
                         setErrors(toErrorMap(response.data.register.errors))
                     } else if (response.data?.register.user) {
@@ -38,6 +38,10 @@ const Register: React.FC<registerProps> = ({}) => {
                     }
                 }}
                 validationSchema={Yup.object().shape({
+                    email: Yup.string()
+                        .min(2, "Email must contain at least 2 characters")
+                        .required("Email is required")
+                        .email("Email must be valid"),
                     username: Yup.string()
                         .min(2, "Username must contain at least 2 characters")
                         .required("Username is required"),
@@ -48,6 +52,7 @@ const Register: React.FC<registerProps> = ({}) => {
             >
             {({ isSubmitting }) => (
                 <Form>
+                    <InputField name='email' label='Email' placeholder='email'/>
                     <InputField name='username' label='Username' placeholder='username'/>
                     <InputField name='password' label='password' placeholder='password' type='password'/>
                     <Box mt={6}>

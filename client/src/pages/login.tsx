@@ -23,9 +23,9 @@ const Login: React.FC<{}> = ({}) => {
     <NavBar/>
        <Wrapper variant='small'>
             <Formik 
-                initialValues={{ username: '', password: '' }}
+                initialValues={{ usernameOrEmail: '', password: '' }}
                 onSubmit={async (values, { setErrors }) => {
-                    const response = await login({ options: values })
+                    const response = await login(values)
                     if(response.data?.login.errors) {
                         setErrors(toErrorMap(response.data.login.errors))
                     } else if (response.data?.login.user) {
@@ -34,9 +34,9 @@ const Login: React.FC<{}> = ({}) => {
                     }
                 }}
                 validationSchema={Yup.object().shape({
-                    username: Yup.string()
-                        .min(2, "Username must contain at least 2 characters")
-                        .required("Username is required"),
+                    usernameOrEmail: Yup.string()
+                        .min(2, "Username or email must contain at least 2 characters")
+                        .required("Username or email is required"),
                     password: Yup.string()
                         .min(2, "Password must contain at least 2 characters")
                         .required("Password is required")
@@ -44,7 +44,7 @@ const Login: React.FC<{}> = ({}) => {
             >
             {({ isSubmitting }) => (
                 <Form>
-                    <InputField name='username' label='Username' placeholder='username'/>
+                    <InputField name='usernameOrEmail' label='Username or Email' placeholder='username or email'/>
                     <InputField name='password' label='password' placeholder='password' type='password'/>
                     <Box mt={6}>
                         <Button type='submit' bg='teal' color='white' isLoading={isSubmitting}>Login</Button>
