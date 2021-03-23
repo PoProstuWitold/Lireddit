@@ -1,6 +1,6 @@
 import { dedupExchange, fetchExchange } from 'urql'
 import { cacheExchange } from '@urql/exchange-graphcache'
-import { LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
+import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
 import { betterUpdateQuery } from './betterUpdateQuery'
 
 export const createUrqlClient = (ssrExchange: any ) => ({
@@ -51,6 +51,22 @@ export const createUrqlClient = (ssrExchange: any ) => ({
                 { query: MeDocument },
                 _result,
                 () => ({ me: null })
+              )
+            },
+            changePassword: (_result, args, cache, info) => {
+              betterUpdateQuery<ChangePasswordMutation, MeQuery>(
+                cache, 
+                { query: MeDocument },
+                _result,
+                (result, query) => {
+                  if(result.changePassword.errors) {
+                    return query
+                  } else {
+                    return {
+                      me: result.changePassword.user
+                    }
+                  }
+                }
               )
             }
           }
