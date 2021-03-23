@@ -11,6 +11,8 @@ import { useRouter } from 'next/router'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import { withUrqlClient } from 'next-urql'
 import { NavBar } from '../components/NavBar'
+import NextLink from 'next/link'
+import { Flex, Link } from '@chakra-ui/react'
 
 const Login: React.FC<{}> = ({}) => {
     
@@ -46,6 +48,11 @@ const Login: React.FC<{}> = ({}) => {
                 <Form>
                     <InputField name='usernameOrEmail' label='Username or Email' placeholder='username or email'/>
                     <InputField name='password' label='password' placeholder='password' type='password'/>
+                    <Flex mt={4}>
+                        <NextLink href="/forgot-password">
+                            <Link ml="auto">Forgot password?</Link>
+                        </NextLink>
+                    </Flex>
                     <Box mt={6}>
                         <Button type='submit' bg='teal' color='white' isLoading={isSubmitting}>Login</Button>
                     </Box>
