@@ -1,4 +1,3 @@
-import { Connection, EntityManager, IDatabaseDriver } from '@mikro-orm/core'
 import { Request, Response } from 'express'
 import { Redis } from 'ioredis'
 //import { Session, SessionData } from 'express-session' //either import this and uncomment second part of req type or uncomment declare module
@@ -10,7 +9,6 @@ declare module 'express-session' {
 }
 
 export type MyContext = {
-    em: EntityManager<any> & EntityManager<IDatabaseDriver<Connection>>;
     req: Request; //& { session: Session & Partial<SessionData> & { userId?: number } };
     res: Response;
     redis: Redis

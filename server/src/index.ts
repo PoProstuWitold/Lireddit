@@ -1,7 +1,5 @@
 import 'reflect-metadata'
-import { MikroORM } from '@mikro-orm/core' //ctrl + space for autocompletion
 import { COOKIE_NAME, __prod__ } from './constants'
-import microConfig from './mikro-orm.config'
 import express from 'express'
 import { ApolloServer } from 'apollo-server-express'
 import { buildSchema } from 'type-graphql'
@@ -13,10 +11,26 @@ import session from 'express-session'
 import connectRedis from 'connect-redis'
 import { MyContext } from './types'
 import cors from 'cors'
+import { createConnection } from 'typeorm'
+import { Post } from './entities/Post'
+import { User } from './entities/User'
+import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 
 const main = async () => {
-    const orm = await MikroORM.init(microConfig)
-    await orm.getMigrator().up()
+     const conn = await createConnection({
+        type: 'postgres',
+        database: 'lireddit-postgres',
+        username: 'admin',
+        password: 'admin',
+        logging: true,
+        synchronize: true,
+        namingStrategy: new SnakeNamingStrategy(),
+        entities: [
+            Post,
+            User
+        ],
+    })
+
 
     const RedisStore = connectRedis(session)
     const redis = new Redis()
@@ -58,7 +72,7 @@ const main = async () => {
             ],
             validate: false
         }),
-        context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }) //special object that is accesibble from all your resolvers
+        context: ({ req, res }): MyContext => ({ req, res, redis }) //special object that is accesibble from all your resolvers
     })
 
     apolloServer.applyMiddleware({
