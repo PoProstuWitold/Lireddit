@@ -7,7 +7,6 @@ import insertedDataHandler from '../utils/insertedDataHandler'
 import { COOKIE_NAME, FORGET_PASSWORD_PREFIX } from '../constants'
 import { sendEmail } from '../utils/sendEmail'
 import { v4 } from 'uuid'
-import { getConnection } from 'typeorm'
 
 @InputType()
 class UsernamePasswordInput {
@@ -56,22 +55,16 @@ export class UserResolver {
         }
 
 
-        const hashedPassword = await argon2.hash(options.password);
-    let user;
+        const hashedPassword = await argon2.hash(options.password)
+
+        const user = User.create({
+            username: options.username,
+            email: options.email,
+            password: hashedPassword,
+        })
+
         try {
-            // User.create({}).save()
-            const result = await getConnection()
-                .createQueryBuilder()
-                .insert()
-                .into(User)
-                .values({
-                    username: options.username,
-                    email: options.email,
-                    password: hashedPassword,
-                })
-                .returning("*")
-                .execute();
-            user = result.raw[0];
+            await user.save()
         } catch(err) {  //|| err.detail.includes("already exists"))
             if (err.code === '23505' && err.detail.includes('username')) { //PostgreSQL duplicate error code
                 return {

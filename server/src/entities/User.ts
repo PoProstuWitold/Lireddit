@@ -8,11 +8,11 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id!: number
 
-    @Field(() => String, { nullable: true })
+    @Field(() => String)
     @CreateDateColumn()
     createdAt!: Date
 
-    @Field(() => String, { nullable: true })
+    @Field(() => String)
     @UpdateDateColumn()
     updatedAt!: Date
 
