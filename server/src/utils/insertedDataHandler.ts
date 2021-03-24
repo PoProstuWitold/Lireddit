@@ -15,6 +15,7 @@ const insertedDataHandler = (schema: ObjectSchema, data: any) => {
             })
             // console.log('field', key.path.toString())
             // console.log('message', key.message)
+            // console.log(error.details)
         }
     }
 
