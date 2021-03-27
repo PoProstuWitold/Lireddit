@@ -13,7 +13,7 @@ import { withUrqlClient, NextComponentType } from 'next-urql'
 import { createUrqlClient } from '../../utils/createUrqlClient'
 import { Layout } from '../../components/Layout'
 
-const ChangePassword: NextPage<{token: string}> = ({token}) => {
+const ChangePassword: NextPage = () => {
 
     const [, changePassword] = useChangePasswordMutation()
 
@@ -29,7 +29,8 @@ const ChangePassword: NextPage<{token: string}> = ({token}) => {
                 onSubmit={async (values, { setErrors }) => {
                     const response = await changePassword({
                         newPassword: values.newPassword,
-                        token
+                        token:
+                            typeof router.query.token === "string" ? router.query.token : ""
                     })
                     if(response.data?.changePassword.errors) {
                         const errorMap = toErrorMap(response.data.changePassword.errors)
@@ -77,12 +78,6 @@ const ChangePassword: NextPage<{token: string}> = ({token}) => {
         </Layout>
     </>
     );
-}
-
-ChangePassword.getInitialProps = ({ query }) => {
-    return {
-        token: query.token as string
-    }
 }
 
 export default withUrqlClient(createUrqlClient)(ChangePassword as unknown as NextComponentType)
