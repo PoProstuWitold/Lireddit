@@ -1,8 +1,10 @@
 import { isAuth } from '../middlewares/isAuth'
 import { MyContext } from '../types'
-import { Arg, Mutation, Query, Resolver, Field, InputType, Ctx, UseMiddleware } from 'type-graphql'
+import { Arg, Mutation, Query, Resolver, Field, InputType, Ctx, UseMiddleware, ObjectType } from 'type-graphql'
 import { Post } from '../entities/Post'
-
+import insertedDataHandler from '../utils/insertedDataHandler'
+import { postSchema } from '../utils/validation'
+import { FieldError } from './user'
 // QUERY - getting
 // MUTATION - updating, deleting
 
@@ -12,6 +14,16 @@ class PostInput {
     title: string;
     @Field()
     text: string;
+}
+
+
+@ObjectType()
+class PostResponse {
+    @Field(() => [FieldError], { nullable: true })
+    errors?: FieldError[]
+
+    @Field(() => Post, { nullable: true })
+    post?: Post
 }
 
 @Resolver()
@@ -28,17 +40,44 @@ export class PostResolver {
         return Post.findOne(id)
     }
 
-    @Mutation(() => Post)
+    @Mutation(() => PostResponse)
     @UseMiddleware(isAuth)
     async createPost(
         @Arg("input") input: PostInput,
         @Ctx() { req }: MyContext
-    ): Promise<Post> {
-        // 2 sql queries
-        return Post.create({
+    ): Promise<PostResponse> {
+
+        const errors = insertedDataHandler(postSchema, input)
+
+        if(errors) {
+            return { errors }
+        }
+
+        const post = Post.create({
             ...input,
             creatorId: req.session.userId,
-          }).save();
+        })
+
+        
+        try {
+            await post.save()
+        } catch (err) {
+            console.log(err)
+            return {
+                errors: [
+                    {
+                        field: "title",
+                        message: "Something went wrong. Please, try again",
+                    },
+                    {
+                        field: "text",
+                        message: "Something went wrong. Please, try again",
+                    }
+                ]
+            }
+        }
+
+        return { post }
     }
 
     @Mutation(() => Post, { nullable: true })

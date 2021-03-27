@@ -1,5 +1,5 @@
 import { dedupExchange, fetchExchange, Exchange } from 'urql'
-import { cacheExchange } from '@urql/exchange-graphcache'
+import { cacheExchange, Cache } from '@urql/exchange-graphcache'
 import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
 import { betterUpdateQuery } from './betterUpdateQuery'
 import { pipe, tap } from 'wonka'
@@ -15,6 +15,17 @@ const errorExchange: Exchange = ({ forward }) => ops$ => {
     })
   );
 };
+
+function invalidateAllPosts(cache: Cache) {
+  const allFields = cache.inspectFields('Query')
+  console.log('allFields: ', allFields)
+  const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
+  console.log('fieldInfos: ', fieldInfos)
+  fieldInfos.forEach((fi) => {
+    console.log('fi', fi)
+    cache.invalidate("Query", "posts");
+  });
+}
 
 export const createUrqlClient = (ssrExchange: any ) => ({
     url: 'http://localhost:4000/graphql',
@@ -81,7 +92,10 @@ export const createUrqlClient = (ssrExchange: any ) => ({
                   }
                 }
               )
-            }
+            },
+            createPost: (_result, args, cache, info) => {
+              invalidateAllPosts(cache)
+            },
           }
         },
     }),
