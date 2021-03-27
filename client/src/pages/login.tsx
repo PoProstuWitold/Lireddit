@@ -1,6 +1,5 @@
 import React from 'react'
 import { Formik, Form } from 'formik'
-import { Wrapper } from '../components/Wrapper'
 import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
@@ -10,9 +9,9 @@ import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import { withUrqlClient } from 'next-urql'
-import { NavBar } from '../components/NavBar'
 import NextLink from 'next/link'
 import { Flex, Link } from '@chakra-ui/react'
+import { Layout } from '../components/Layout'
 
 const Login: React.FC<{}> = ({}) => {
     
@@ -22,8 +21,7 @@ const Login: React.FC<{}> = ({}) => {
 
     return (
     <>
-    <NavBar/>
-       <Wrapper variant='small'>
+    <Layout variant='small'>
             <Formik 
                 initialValues={{ usernameOrEmail: '', password: '' }}
                 onSubmit={async (values, { setErrors }) => {
@@ -59,7 +57,7 @@ const Login: React.FC<{}> = ({}) => {
                 </Form>
             )}
             </Formik>
-        </Wrapper>
+        </Layout>
     </>
     )
 }

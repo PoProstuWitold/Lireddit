@@ -1,13 +1,12 @@
 import React, { useState } from 'react'
-import { NavBar } from '../components/NavBar'
 import * as Yup from 'yup'
 import { Formik, Form } from 'formik'
 import { Box, Button } from '@chakra-ui/react'
 import { InputField } from '../components/InputField'
-import { Wrapper } from '../components/Wrapper'
 import { useForgotPasswordMutation } from '../generated/graphql'
 import { withUrqlClient } from 'next-urql'
 import { createUrqlClient } from '../utils/createUrqlClient'
+import { Layout } from '../components/Layout'
 
 interface forgotPassword {
 
@@ -21,8 +20,7 @@ const forgotPassword: React.FC<{}> = ({}) => {
 
     return (
         <>
-        <NavBar/>
-        <Wrapper variant='small'>
+        <Layout variant='small'>
             <Formik 
                 initialValues={{ email: ""}}
                 onSubmit={async (values) => {
@@ -56,7 +54,7 @@ const forgotPassword: React.FC<{}> = ({}) => {
                 )
             }
             </Formik>
-        </Wrapper>
+        </Layout>
         </>
     )
 }

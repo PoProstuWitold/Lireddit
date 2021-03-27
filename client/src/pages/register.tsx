@@ -1,6 +1,5 @@
 import React from 'react'
 import { Formik, Form } from 'formik'
-import { Wrapper } from '../components/Wrapper'
 import { InputField } from '../components/InputField'
 import { Button } from '@chakra-ui/button'
 import { Box } from '@chakra-ui/layout'
@@ -10,7 +9,7 @@ import { toErrorMap } from '../utils/toErrorMap'
 import { useRouter } from 'next/router'
 import { createUrqlClient } from '../utils/createUrqlClient'
 import { withUrqlClient } from 'next-urql'
-import { NavBar } from '../components/NavBar'
+import { Layout } from '../components/Layout'
 
 interface registerProps {
     
@@ -24,8 +23,7 @@ const Register: React.FC<registerProps> = ({}) => {
 
     return (
         <>
-        <NavBar/>
-       <Wrapper variant='small'>
+        <Layout variant='small'>
             <Formik 
                 initialValues={{ email: '', username: '', password: '' }}
                 onSubmit={async (values, { setErrors }) => {
@@ -61,7 +59,7 @@ const Register: React.FC<registerProps> = ({}) => {
                 </Form>
             )}
             </Formik>
-        </Wrapper>
+        </Layout>
     </>
     )
 }

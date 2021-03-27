@@ -2,7 +2,6 @@ import { Box, Button, Flex, Link } from '@chakra-ui/react'
 import { Formik, Form } from 'formik'
 import { NextPage } from 'next'
 import { InputField } from '../../components/InputField'
-import { Wrapper } from '../../components/Wrapper'
 import { toErrorMap } from '../../utils/toErrorMap'
 import * as Yup from 'yup'
 import { PassportField } from '../../components/PassportField'
@@ -12,7 +11,7 @@ import React, { useState } from 'react'
 import NextLink from 'next/link'
 import { withUrqlClient, NextComponentType } from 'next-urql'
 import { createUrqlClient } from '../../utils/createUrqlClient'
-import { NavBar } from '../../components/NavBar'
+import { Layout } from '../../components/Layout'
 
 const ChangePassword: NextPage<{token: string}> = ({token}) => {
 
@@ -24,8 +23,7 @@ const ChangePassword: NextPage<{token: string}> = ({token}) => {
 
     return (
         <>
-        <NavBar/>
-       <Wrapper variant='small'>
+        <Layout variant='small'>
             <Formik 
                 initialValues={{ newPassword: "", confirmPassword: "" }}
                 onSubmit={async (values, { setErrors }) => {
@@ -76,7 +74,7 @@ const ChangePassword: NextPage<{token: string}> = ({token}) => {
                 </Form>
             )}
             </Formik>
-        </Wrapper>
+        </Layout>
     </>
     );
 }
