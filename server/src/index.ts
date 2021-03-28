@@ -15,6 +15,7 @@ import { createConnection } from 'typeorm'
 import { Post } from './entities/Post'
 import { User } from './entities/User'
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
+import path from 'path'
 
 const main = async () => {
      const conn = await createConnection({
@@ -25,12 +26,16 @@ const main = async () => {
         logging: true,
         synchronize: true,
         namingStrategy: new SnakeNamingStrategy(),
+        migrations: [
+            path.join(__dirname, "./migrations/*")
+        ],
         entities: [
             Post,
             User
         ],
     })
 
+    await conn.runMigrations()
 
     const RedisStore = connectRedis(session)
     const redis = new Redis()
