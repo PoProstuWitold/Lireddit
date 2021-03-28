@@ -1,6 +1,6 @@
 import { isAuth } from '../middlewares/isAuth'
 import { MyContext } from '../types'
-import { Arg, Mutation, Query, Resolver, Field, InputType, Ctx, UseMiddleware, ObjectType, Int } from 'type-graphql'
+import { Arg, Mutation, Query, Resolver, Field, InputType, Ctx, UseMiddleware, ObjectType, Int, FieldResolver, Root } from 'type-graphql'
 import { Post } from '../entities/Post'
 import insertedDataHandler from '../utils/insertedDataHandler'
 import { postSchema } from '../utils/validation'
@@ -27,8 +27,16 @@ class PostResponse {
     post?: Post
 }
 
-@Resolver()
+@Resolver(Post)
 export class PostResolver {
+
+    @FieldResolver(() => String)
+    textSnippet(
+        @Root() post: Post
+    ) {
+        return `${post.text.slice(0, 50)}...`
+    }
+
     @Query(() => [Post])
     posts(
         @Arg('limit', () => Int) limit: number,
