@@ -14,7 +14,7 @@ import cors from 'cors'
 import { createConnection } from 'typeorm'
 import { Post } from './entities/Post'
 import { User } from './entities/User'
-import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
+//import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from 'path'
 import camelCase from 'camelcase'
 
@@ -31,7 +31,7 @@ const main = async () => {
         password: 'admin',
         logging: true,
         synchronize: true,
-        namingStrategy: new SnakeNamingStrategy(),
+        //namingStrategy: new SnakeNamingStrategy(),
         migrations: [
             path.join(__dirname, "./migrations/*")
         ],
