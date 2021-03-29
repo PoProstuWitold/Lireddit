@@ -12,8 +12,6 @@ const Index = () => {
        limit: 10,
        cursor: null as null | string 
     })
-
-    console.log('gowno', variables);
     
 
     const [{ data, fetching }] = usePostsQuery({

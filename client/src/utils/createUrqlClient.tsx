@@ -1,5 +1,5 @@
 import { dedupExchange, fetchExchange, Exchange, stringifyVariables } from 'urql'
-import { cacheExchange, Cache, Resolver } from '@urql/exchange-graphcache'
+import { cacheExchange, Cache, Resolver, ResolveInfo } from '@urql/exchange-graphcache'
 import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
 import { betterUpdateQuery } from './betterUpdateQuery'
 import { pipe, tap } from 'wonka'
@@ -17,13 +17,10 @@ const errorExchange: Exchange = ({ forward }) => ops$ => {
 };
 
 function invalidateAllPosts(cache: Cache) {
-  const allFields = cache.inspectFields('Query')
-  console.log('allFields: ', allFields)
+  const allFields = cache.inspectFields("Query");
   const fieldInfos = allFields.filter((info) => info.fieldName === "posts");
-  console.log('fieldInfos: ', fieldInfos)
   fieldInfos.forEach((fi) => {
-    console.log('fi', fi)
-    cache.invalidate("Query", "posts");
+    cache.invalidate("Query", "posts", fi.arguments || {});
   });
 }
 
@@ -31,7 +28,7 @@ const cursorPagination = (): Resolver => {
   return (_parent, fieldArgs, cache, info) => {
     const { parentKey: entityKey, fieldName } = info;
     const allFields = cache.inspectFields(entityKey);
-    console.log("allFields: ", allFields);
+    // console.log("allFields: ", allFields);
     const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
     const size = fieldInfos.length;
     if (size === 0) {
@@ -55,8 +52,6 @@ const cursorPagination = (): Resolver => {
       if(!_hasMore) {
         hasMore = _hasMore as boolean
       }
-
-      console.log('data: ', data)
       results.push(...data);
     });
 
