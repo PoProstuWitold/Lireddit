@@ -16,6 +16,12 @@ import { Post } from './entities/Post'
 import { User } from './entities/User'
 import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from 'path'
+import camelCase from 'camelcase'
+
+const camelCaseFieldResolver = (source: any, _args: any, _contextValue: any, info: any): any => {
+    console.log('gowno')
+    return source[camelCase(info.fieldName)]
+}
 
 const main = async () => {
      const conn = await createConnection({
@@ -67,8 +73,9 @@ const main = async () => {
             resave: false,
         })
     )
-    
+
     const apolloServer = new ApolloServer({
+        fieldResolver: camelCaseFieldResolver,
         schema: await buildSchema({
             resolvers: [
                 HelloResolver,

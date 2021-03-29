@@ -24,10 +24,10 @@ export class User extends BaseEntity {
     posts: Post[]
     
     @Field(() => String)
-    @CreateDateColumn()
+    @CreateDateColumn({ name: 'createdAt'})
     createdAt!: Date
 
     @Field(() => String)
-    @UpdateDateColumn()
+    @UpdateDateColumn({ name: 'updatedAt'})
     updatedAt!: Date
 }
