@@ -27,6 +27,15 @@ class PostResponse {
     post?: Post
 }
 
+@ObjectType()
+class PaginatedPosts {
+    @Field(() => [Post])
+    posts: Post[]
+
+    @Field()
+    hasMore: boolean
+}
+
 @Resolver(Post)
 export class PostResolver {
 
@@ -37,26 +46,32 @@ export class PostResolver {
         return `${post.text.slice(0, 50)}...`
     }
 
-    @Query(() => [Post])
-    posts(
+    @Query(() => PaginatedPosts)
+    async posts(
         @Arg('limit', () => Int) limit: number,
         @Arg('cursor', () => String, { nullable: true }) cursor: string | null
-    ): Promise<Post[]> {
+    ): Promise<PaginatedPosts> {
 
         const realLimit = Math.min(50, limit)
+        const realLimitPlusOne = realLimit + 1
 
         const qb = getConnection()
             .getRepository(Post)
             .createQueryBuilder("p") // alias
             .orderBy('"created_at"', 'DESC')
-            .take(realLimit)
+            .take(realLimitPlusOne)
         if(cursor) {
             qb.where('"created_at" < :cursor', { 
                     cursor: new Date(parseInt(cursor)) 
                 })
         }
 
-        return qb.getMany()
+        const posts = await qb.getMany()
+
+        return {
+            posts: posts.slice(0, realLimit),
+            hasMore: posts.length === realLimitPlusOne
+        }
     }
 
     @Query(() => Post, { nullable: true })
