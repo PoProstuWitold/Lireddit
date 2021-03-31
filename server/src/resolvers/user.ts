@@ -1,5 +1,5 @@
 import { MyContext } from '../types'
-import { Field, InputType, Mutation, Resolver, Arg, Ctx, ObjectType, Query} from 'type-graphql'
+import { Field, InputType, Mutation, Resolver, Arg, Ctx, ObjectType, Query, FieldResolver, Root} from 'type-graphql'
 import { User } from '../entities/User'
 import argon2 from 'argon2'
 import { registerSchema } from '../utils/validation'
@@ -40,7 +40,7 @@ class UserResponse {
 }
 
 
-@Resolver()
+@Resolver(User)
 export class UserResolver {
     @Mutation(() => UserResponse)
     async register(
@@ -261,6 +261,15 @@ export class UserResolver {
         req.session.userId = user.id
 
         return { user }
+    }
+
+    @FieldResolver(() => String)
+    email(@Root() user: User, @Ctx() { req }: MyContext) {
+        if(req.session.userId === user.id) {
+            return user.email
+        }
+
+        return ""
     }
 }
 
