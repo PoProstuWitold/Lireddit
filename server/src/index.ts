@@ -17,6 +17,7 @@ import { User } from './entities/User'
 //import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from 'path'
 import camelCase from 'camelcase'
+import { Updoot } from './entities/Updoot'
 
 const camelCaseFieldResolver = (source: any, _args: any, _contextValue: any, info: any): any => {
     console.log('gowno')
@@ -37,7 +38,8 @@ const main = async () => {
         ],
         entities: [
             Post,
-            User
+            User,
+            Updoot
         ],
     })
 
