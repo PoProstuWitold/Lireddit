@@ -6,6 +6,7 @@ import insertedDataHandler from '../utils/insertedDataHandler'
 import { postSchema } from '../utils/validation'
 import { FieldError } from './user'
 import { getConnection } from 'typeorm'
+import { Updoot } from '../entities/Updoot'
 // QUERY - getting
 // MUTATION - updating, deleting
 
@@ -50,21 +51,51 @@ export class PostResolver {
         const isUpdoot = value !== -1
         const realValue = isUpdoot ? 1 : -1
 
-        await getConnection().query(
-            `
-            START TRANSACTION;
+        const updoot = await Updoot.findOne({ where: { postId, userId } })
 
-            INSERT INTO updoot ("userId", "postId", value)
-            VALUES (${userId},${postId},${realValue});
+            // user has voted before and wants to change their vote
+        if(updoot && updoot.value !== realValue) {
+            await getConnection().transaction(async tm => {
+                await tm.query(`
+                    UPDATE updoot
+                    SET value = $1
+                    WHERE "postId" = $2 AND "userId" = $3
+                `, [realValue, postId, userId])
 
-            UPDATE post
-            SET points = points + ${realValue}
-            WHERE id = ${postId};
+                await tm.query(`
+                    UPDATE post
+                    SET points = points + $1
+                    WHERE id = $2
+                `, [2 * realValue, postId])
+            })
+        } else if(updoot && updoot.value === realValue) {
+            await getConnection().transaction(async tm => {
+                await tm.query(`
+                    DELETE FROM updoot
+                    WHERE "postId" = $1 AND "userId" = $2
+                `, [postId, userId])
 
-            COMMIT;
+                await tm.query(`
+                    UPDATE post
+                    SET points = points - $1
+                    WHERE id = $2
+                `, [realValue, postId])
+            })
+        } else if(!updoot) {
+            // user has never voted before
+            await getConnection().transaction(async tm => {
+                await tm.query(`
+                    INSERT INTO updoot ("userId", "postId", value)
+                    VALUES ($1, $2, $3);
+                `, [userId, postId, realValue])
 
-            `
-        )
+                await tm.query(`
+                    UPDATE post
+                    SET points = points + $1
+                    WHERE id = $2;
+                `, [realValue, postId])
+            });
+        }
 
         return true
     }
