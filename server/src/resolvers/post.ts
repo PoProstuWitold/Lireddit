@@ -110,14 +110,16 @@ export class PostResolver {
     @Query(() => PaginatedPosts)
     async posts(
         @Arg('limit', () => Int) limit: number,
-        @Arg('cursor', () => String, { nullable: true }) cursor: string | null
+        @Arg('cursor', () => String, { nullable: true }) cursor: string | null,
+        @Ctx() { req }: MyContext
     ): Promise<PaginatedPosts> {
 
         const realLimit = Math.min(50, limit)
         const realLimitPlusOne = realLimit + 1
 
         const replacements: any[] = [
-            realLimitPlusOne
+            realLimitPlusOne,
+            req.session.userId
         ]
 
         if(cursor) {
@@ -134,9 +136,14 @@ export class PostResolver {
                 'createdAt', u."createdAt",
                 'updatedAt', u."updatedAt"
             ) creator
+            ${
+                req.session.userId
+                  ? ',(SELECT value FROM updoot WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
+                  : 'null AS "voteStatus"'
+              }
             from post p
             inner join public.user u on u.id = p."creatorId"
-            ${cursor ? `where p."createdAt" < $2` : ""}
+            ${cursor ? `where p."createdAt" < $3` : ""}
             order by p."createdAt" DESC
             limit $1
             `,

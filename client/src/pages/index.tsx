@@ -3,9 +3,8 @@ import { createUrqlClient } from '../utils/createUrqlClient'
 import { usePostsQuery } from '../generated/graphql'
 import { Layout } from '../components/Layout'
 import NextLink from 'next/link'
-import { Box, Button, Flex, Heading, IconButton, Link, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Flex, Heading, Link, Stack, Text } from '@chakra-ui/react'
 import { useState } from 'react'
-import { ChevronDownIcon, ChevronUpIcon } from '@chakra-ui/icons'
 import { UpdootSection } from '../components/UpdootSection'
 
 const Index = () => {

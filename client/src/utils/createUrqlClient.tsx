@@ -1,6 +1,6 @@
-import { dedupExchange, fetchExchange, Exchange, stringifyVariables } from 'urql'
+import { dedupExchange, fetchExchange, Exchange, stringifyVariables, gql } from 'urql'
 import { cacheExchange, Cache, Resolver, ResolveInfo } from '@urql/exchange-graphcache'
-import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation } from '../generated/graphql'
+import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation, VoteMutationVariables } from '../generated/graphql'
 import { betterUpdateQuery } from './betterUpdateQuery'
 import { pipe, tap } from 'wonka'
 import Router from 'next/router'
@@ -191,6 +191,47 @@ export const createUrqlClient = (ssrExchange: any ) => ({
             },
             createPost: (_result, args, cache, info) => {
               invalidateAllPosts(cache)
+            },
+            vote: (_result, args, cache, info) => {
+              const { postId, value } = args as VoteMutationVariables;
+              const data = cache.readFragment(
+                gql`
+                  fragment _ on Post {
+                    id
+                    points
+                    voteStatus
+                  }
+                `,
+                { id: postId }
+              )
+  
+              if (data) {
+                if (data.voteStatus === value) {
+                  console.log('value', value)
+                  const newPoints = (data.points as number) - data.voteStatus
+                  console.log('newPoints', newPoints)
+                  cache.writeFragment(
+                    gql`
+                      fragment __ on Post {
+                        points
+                        voteStatus
+                      }
+                    `,
+                    { id: postId, points: newPoints, voteStatus: null }
+                  )
+                  return
+                }
+                const newPoints = (data.points as number) + (!data.voteStatus ? 1 : 2) * value;
+                cache.writeFragment(
+                  gql`
+                    fragment __ on Post {
+                      points
+                      voteStatus
+                    }
+                  `,
+                  { id: postId, points: newPoints, voteStatus: value }
+                )
+              }
             },
           }
         },
