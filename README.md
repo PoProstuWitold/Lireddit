@@ -11,6 +11,8 @@
 
 and a few more
 
+## Remember to turn "request.credentials" to "include" in GraphQL playground
+
 ## How to run locally:
 
 ### Using Docker:
