@@ -15,7 +15,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
     const [{fetching: logoutFetching }, logout] = useLogoutMutation()
     const [{data, fetching}] = useMeQuery({
         pause: isServer()
-    })
+    }) // can be passed option {pause: isServer()} for not srr and vice versa
     let body = null
 
     if(fetching) {
