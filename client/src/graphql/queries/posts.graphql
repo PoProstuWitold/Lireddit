@@ -3,11 +3,18 @@ query Posts($limit: Int!, $cursor: String) {
     hasMore
     posts {
       id
-      createdAt
-      updatedAt
       title
       textSnippet
+      points
+      createdAt
+      updatedAt
       creatorId
+      creator {
+        id
+        username
+        createdAt
+        updatedAt
+      }
     }
   }
 }
