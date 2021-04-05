@@ -1,6 +1,6 @@
 import { dedupExchange, fetchExchange, Exchange, stringifyVariables, gql } from 'urql'
 import { cacheExchange, Cache, Resolver, ResolveInfo } from '@urql/exchange-graphcache'
-import { ChangePasswordMutation, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation, VoteMutationVariables } from '../generated/graphql'
+import { ChangePasswordMutation, DeletePostMutationVariables, LoginMutation, LogoutMutation, MeDocument, MeQuery, RegisterMutation, VoteMutationVariables } from '../generated/graphql'
 import { betterUpdateQuery } from './betterUpdateQuery'
 import { pipe, tap } from 'wonka'
 import Router from 'next/router'
@@ -245,6 +245,12 @@ export const createUrqlClient = (ssrExchange: any, ctx: any ) => {
                 )
               }
             },
+            deletePost: (_result, args, cache, info) => {
+              cache.invalidate({
+                __typename: "Post",
+                id: (args as DeletePostMutationVariables).id
+              })
+            }
           }
         },
     }),
