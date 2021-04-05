@@ -54,7 +54,7 @@ export const NavBar: React.FC<NavBarProps> = ({}) => {
     }
 
     return (
-        <Flex zIndex={1} position="sticky" top={0} bg='#008080' p={4}>
+        <Flex zIndex={1} position="sticky" top={0} bg='#008080' p={4} align='center'>
             <NextLink href='/'>
                     <Link variant="nolink" color='white' mr={3}>
                         <Box as='button' textDecoration='none' color='white' fontWeight='bold' letterSpacing={4} mr={4} textShadow="2px 2px #1A202C">Logo</Box>
