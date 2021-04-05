@@ -7,6 +7,7 @@ import { Box, Button, Flex, Heading, IconButton, Link, Stack, Text } from '@chak
 import { useState } from 'react'
 import { UpdootSection } from '../components/UpdootSection'
 import { DeleteIcon } from '@chakra-ui/icons'
+import { EditDeletePostButtons } from '../components/EditDeletePostButtons'
 
 const Index = () => {
 
@@ -47,15 +48,12 @@ const Index = () => {
                 <Text>Author: {p.creator.username}</Text>
                 <Flex align='center'>
                   <Text flex={1} mt={4}>{p.textSnippet}</Text>
-                  <IconButton
-                      bgColor='red'
-                      ml='auto'
-                      onClick={() => {
-                        deletePost({ id: p.id })
-                      }}
-                      aria-label="Delete a post"
-                      icon={<DeleteIcon w={30} h={30}/>}
-                  />
+                  <Box ml='auto'>
+                    <EditDeletePostButtons
+                      id={p.id}
+                      creatorId={p.creator.id}
+                    />
+                  </Box>
                 </Flex>
               </Box>
             </Flex>
