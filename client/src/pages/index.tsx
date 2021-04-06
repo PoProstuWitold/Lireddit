@@ -19,12 +19,17 @@ const Index = () => {
 
     const [, deletePost] = useDeletePostMutation()
 
-    const [{ data, fetching }] = usePostsQuery({
+    const [{ data, error, fetching }] = usePostsQuery({
       variables
     })
 
     if (!fetching && !data) {
-      return <div>Something went wrong :/</div>
+      return (
+        <Box>
+          <Heading>Failed to fetch data</Heading>
+          <Text>{error?.message}</Text>
+        </Box>
+      )
     }
 
     return (
