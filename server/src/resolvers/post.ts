@@ -7,6 +7,7 @@ import { postSchema } from '../utils/validation'
 import { FieldError } from './user'
 import { getConnection } from 'typeorm'
 import { Updoot } from '../entities/Updoot'
+import { User } from '../entities/User'
 // QUERY - getting
 // MUTATION - updating, deleting
 
@@ -107,6 +108,11 @@ export class PostResolver {
         return `${post.text.slice(0, 50)}...`
     }
 
+    @FieldResolver(() => User)
+    creator(@Root() post: Post, @Ctx() { userLoader }: MyContext) {
+        return userLoader.load(post.creatorId)
+    }
+
     @Query(() => PaginatedPosts)
     async posts(
         @Arg('limit', () => Int) limit: number,
@@ -134,20 +140,12 @@ export class PostResolver {
         const posts = await getConnection().query(
             `
             SELECT p.*, 
-            JSON_BUILD_OBJECT(
-                'id', u.id,
-                'username', u.username,
-                'email', u.email,
-                'createdAt', u."createdAt",
-                'updatedAt', u."updatedAt"
-            ) creator,
             ${
                 req.session.userId
                   ? '(SELECT value FROM updoot WHERE "userId" = $2 AND "postId" = p.id) "voteStatus"'
                   : 'null AS "voteStatus"'
             }
             FROM post p
-            INNER JOIN public.user u on u.id = p."creatorId"
             ${cursor ? `where p."createdAt" < $${cursorIdx}` : ""}
             ORDER BY p."createdAt" DESC
             LIMIT $1
@@ -179,7 +177,7 @@ export class PostResolver {
     post(
         @Arg('id', () => Int) id: number
     ): Promise<Post | undefined> {
-        return Post.findOne(id, { relations: ['creator'] })
+        return Post.findOne(id)
     }
 
     @Mutation(() => PostResponse)

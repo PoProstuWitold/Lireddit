@@ -16,13 +16,9 @@ import { Post } from './entities/Post'
 import { User } from './entities/User'
 //import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from 'path'
-import camelCase from 'camelcase'
 import { Updoot } from './entities/Updoot'
+import { createUserLoader } from './utils/createUserLoader'
 
-const camelCaseFieldResolver = (source: any, _args: any, _contextValue: any, info: any): any => {
-    console.log('gowno')
-    return source[camelCase(info.fieldName)]
-}
 
 const main = async () => {
      const conn = await createConnection({
@@ -78,7 +74,6 @@ const main = async () => {
     )
 
     const apolloServer = new ApolloServer({
-        fieldResolver: camelCaseFieldResolver,
         schema: await buildSchema({
             resolvers: [
                 HelloResolver,
@@ -87,7 +82,7 @@ const main = async () => {
             ],
             validate: false
         }),
-        context: ({ req, res }): MyContext => ({ req, res, redis }) //special object that is accesibble from all your resolvers
+        context: ({ req, res }): MyContext => ({ req, res, redis, userLoader: createUserLoader() }) //special object that is accesibble from all your resolvers
     })
 
     apolloServer.applyMiddleware({
