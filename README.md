@@ -29,6 +29,3 @@ yarn dev
 ```bash
 yarn dev
 ```
-
-### Not using docker:
-Coming soon
