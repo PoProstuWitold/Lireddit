@@ -31,4 +31,4 @@ yarn dev
 ```
 
 ### Credits:
-Project from Ben Awad YouTube (course)[https://www.youtube.com/watch?v=I6ypD7qv3Z8]
+Project from Ben Awad YouTube [course](https://www.youtube.com/watch?v=I6ypD7qv3Z8)
