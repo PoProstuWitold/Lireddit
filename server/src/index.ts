@@ -1,7 +1,8 @@
 import 'reflect-metadata'
 import { COOKIE_NAME, __prod__ } from './constants'
-import express from 'express'
-import { ApolloServer } from 'apollo-server-express'
+import express, { Request, Response } from 'express'
+import { ApolloServer } from '@apollo/server'
+import { expressMiddleware } from '@apollo/server/express4'
 import { buildSchema } from 'type-graphql'
 import { HelloResolver } from './resolvers/hello'
 import { PostResolver } from './resolvers/post'
@@ -16,6 +17,7 @@ import { Post } from './entities/Post'
 import { User } from './entities/User'
 //import { SnakeNamingStrategy } from 'typeorm-naming-strategies'
 import path from 'path'
+import http from 'http'
 import { Updoot } from './entities/Updoot'
 import { createUserLoader } from './utils/createUserLoader'
 import { createUpdootLoader } from './utils/createUpdootLoader'
@@ -46,6 +48,7 @@ const main = async () => {
     const redis = new Redis()
 
     const app = express()
+    const httpServer = http.createServer(app)
 
     app.set("trust proxy", 1)
     app.use(
@@ -54,6 +57,8 @@ const main = async () => {
             credentials: true
         })
     )
+    app.use(express.json())
+    app.use(express.urlencoded({ extended: false }))
 
     app.use(
         session({
@@ -74,7 +79,7 @@ const main = async () => {
         })
     )
 
-    const apolloServer = new ApolloServer({
+    const server = new ApolloServer({
         schema: await buildSchema({
             resolvers: [
                 HelloResolver,
@@ -82,24 +87,27 @@ const main = async () => {
                 UserResolver
             ],
             validate: false
+        })
+    })
+
+    await server.start()
+    app.use(
+        '/graphql',
+        cors<cors.CorsRequest>({ origin: 'http://localhost:3000', credentials: true }),
+        expressMiddleware(server, {
+          context: async ({ req, res }: { req: Request, res: Response }) => ({ 
+                req, 
+                res, 
+                redis, 
+                userLoader: createUserLoader(), 
+                updootLoader: createUpdootLoader()
+            }) as MyContext,
         }),
-        context: ({ req, res }): MyContext => ({ 
-            req, 
-            res, 
-            redis, 
-            userLoader: createUserLoader(), 
-            updootLoader: createUpdootLoader()
-        }) //special object that is accesibble from all your resolvers
-    })
+    )
 
-    apolloServer.applyMiddleware({
-        app,
-        cors: false
-    })
 
-    app.listen(4000, () => {
-        console.log(`Server started listening at port 4000. GLHF!`)
-    })
+    httpServer.listen({ port: 4000 })
+    console.log(`Server started listening at port 4000. GLHF!`)
 }
 
 main().catch(err => {
