@@ -1,34 +1,56 @@
 # Lireddit
 
-## Training project to learn:
+Fullstack Express GraphQL, Next.js app for CRUD posts and voting for them
+
+# Usage
+
+## With Docker
+
+### 1. Run containers
+```bash
+docker compose up 
+```
+
+
+## Without Docker
+### 1. Install Server dependencies and run
+```bash
+cd server
+```
+```bash
+npm install/pnpm install/yarn
+```
+```bash
+nest start --watch
+```
+
+### 2. Install Client dependencies and run
+```bash
+cd client
+```
+```bash
+npm install/pnpm install/yarn
+```
+```bash
+next dev
+```
+
+
+
+
+## Goals
+Learn:
 - GraphQL
-- NextJS
+- Next.js
+- Nest.js
 - Nodemailer
 - TypeScript itself
 - MicroORM/TypeORM
 - URQL/Apollo
 - Data validation
 
-and a few more
-
-## Remember to turn "request.credentials" to "include" in GraphQL playground
-
-## How to run locally:
-
-### Using Docker:
-1. Execute following command is server directory:
-```bash
-docker-compose up
-```
-2. Run following commands in server directory:
-```bash
-yarn watch
-yarn dev
-```
-3. Run following command in client directory:
-```bash
-yarn dev
-```
-
 ### Credits:
-Project from Ben Awad YouTube [course](https://www.youtube.com/watch?v=I6ypD7qv3Z8)
+Modified by me project from Ben Awad YouTube [course](https://www.youtube.com/watch?v=I6ypD7qv3Z8)
+
+## License
+[ISC](https://opensource.org/licenses/ISC)
